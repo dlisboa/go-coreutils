@@ -29,6 +29,7 @@ func main() {
 	if len(files) > 1 {
 		printHeader = true
 	}
+
 	for i, f := range files {
 		f, err := os.Open(f)
 		if err != nil {
@@ -71,11 +72,11 @@ func readLines(f *os.File) {
 	count := 0
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+		count++
 		if count == *nflag {
 			break
 		}
-		fmt.Println(scanner.Text())
-		count++
 	}
 }
 
