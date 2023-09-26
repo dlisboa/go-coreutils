@@ -20,4 +20,4 @@ Display first lines (or bytes) of a file.
   ==> foo <==
   world$
   ```
-- [] Optimization: don't read all before spitting, do chunks at a time
+- [X] Optimization: don't read all before spitting, do chunks at a time

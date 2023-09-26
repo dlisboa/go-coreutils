@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -28,12 +29,16 @@ func main() {
 	if len(files) > 1 {
 		printHeader = true
 	}
-	for _, f := range files {
+	for i, f := range files {
 		f, err := os.Open(f)
 		if err != nil {
 			die(err)
 		}
 		head(f, printHeader)
+		// print new line between files unless it's the last one
+		if i < len(files)-1 {
+			fmt.Println()
+		}
 	}
 }
 
@@ -75,9 +80,21 @@ func readLines(f *os.File) {
 }
 
 func readBytes(f *os.File) {
-	buf := make([]byte, *cflag)
-	f.Read(buf)
-	fmt.Println(string(buf))
+	reader := bufio.NewReader(f)
+	buf := make([]byte, min(*cflag, 4096))
+	count := 0
+
+	for count < *cflag {
+		n, err := reader.Read(buf)
+		if err == io.EOF {
+			return
+		}
+		if err != nil {
+			die(err)
+		}
+		count += n
+		fmt.Printf("%s", buf)
+	}
 }
 
 func head(f *os.File, header bool) {
