@@ -69,8 +69,12 @@ func checkFlags() {
 }
 
 func readLines(f *os.File) {
-	count := 0
+	if *nflag <= 0 {
+		die(fmt.Errorf("illegal line count -- %d", *nflag))
+	}
+
 	scanner := bufio.NewScanner(f)
+	count := 0
 	for scanner.Scan() {
 		fmt.Println(scanner.Text())
 		count++
@@ -81,10 +85,13 @@ func readLines(f *os.File) {
 }
 
 func readBytes(f *os.File) {
+	if *cflag <= 0 {
+		die(fmt.Errorf("illegal byte count -- %d", *cflag))
+	}
+
 	reader := bufio.NewReader(f)
 	buf := make([]byte, min(*cflag, 4096))
 	count := 0
-
 	for count < *cflag {
 		n, err := reader.Read(buf)
 		if err == io.EOF {
