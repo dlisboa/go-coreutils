@@ -49,11 +49,14 @@ func die(e error) {
 }
 
 func checkFlags() {
-	if flag.NFlag() > 1 {
+	switch {
+	case flag.NFlag() > 1:
 		die(errors.New("can't combine line and byte counts"))
-	}
-
-	if flag.NFlag() == 0 {
+	case *nflag <= 0:
+		die(fmt.Errorf("illegal line count -- %d", *nflag))
+	case *cflag <= 0:
+		die(fmt.Errorf("illegal byte count -- %d", *cflag))
+	case flag.NFlag() == 0: // no flags at command line
 		nflagGiven = true
 		return
 	}
@@ -69,12 +72,8 @@ func checkFlags() {
 }
 
 func readLines(f *os.File) {
-	if *nflag <= 0 {
-		die(fmt.Errorf("illegal line count -- %d", *nflag))
-	}
-
-	scanner := bufio.NewScanner(f)
 	count := 0
+	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		fmt.Println(scanner.Text())
 		count++
@@ -85,10 +84,6 @@ func readLines(f *os.File) {
 }
 
 func readBytes(f *os.File) {
-	if *cflag <= 0 {
-		die(fmt.Errorf("illegal byte count -- %d", *cflag))
-	}
-
 	reader := bufio.NewReader(f)
 	buf := make([]byte, min(*cflag, 4096))
 	count := 0
