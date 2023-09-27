@@ -33,7 +33,8 @@ func main() {
 	for i, f := range files {
 		f, err := os.Open(f)
 		if err != nil {
-			die(err)
+			printerr(err)
+			continue
 		}
 		head(f, printHeader)
 		// print new line between files unless it's the last one
@@ -43,8 +44,12 @@ func main() {
 	}
 }
 
-func die(e error) {
+func printerr(e error) {
 	fmt.Fprintln(os.Stderr, fmt.Errorf("head: %w", e))
+}
+
+func die(e error) {
+	printerr(e)
 	os.Exit(1)
 }
 
