@@ -39,10 +39,13 @@ func main() {
 	}
 }
 
+// tail prints at most *nflag lines of a file, and optionally a header
 func tail(f *os.File, header bool) {
-	scanner := bufio.NewScanner(f)
+	// uses a ring buffer when iterating over the lines to keep a sliding window
+	// of lines in memory.
 	ring := ring.New(*nflag)
 
+	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		ring.Value = scanner.Text()
 		ring = ring.Next()
