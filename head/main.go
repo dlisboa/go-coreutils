@@ -25,18 +25,13 @@ func main() {
 		os.Exit(0)
 	}
 
-	var printHeader bool
-	if len(files) > 1 {
-		printHeader = true
-	}
-
 	for i, f := range files {
 		f, err := os.Open(f)
 		if err != nil {
 			printerr(err)
 			continue
 		}
-		head(f, printHeader)
+		head(f, len(files) > 1)
 		// print new line between files unless it's the last one
 		if i < len(files)-1 {
 			fmt.Println()
