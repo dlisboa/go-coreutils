@@ -1,24 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"io"
 	"os"
 )
 
 func cat(f *os.File) {
-	buf := make([]byte, 4096) // read 4 KB at a time
-
-	for {
-		_, err := f.Read(buf)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			die(err)
-		}
-		fmt.Printf("%s", buf)
-	}
+	reader := bufio.NewReaderSize(f, 4096) // read 4 KB at a time
+	reader.WriteTo(os.Stdout)
 }
 
 func die(e error) {
@@ -29,13 +19,23 @@ func die(e error) {
 func main() {
 	if len(os.Args) == 1 {
 		cat(os.Stdout)
-	} else {
-		for _, arg := range os.Args[1:] {
-			f, err := os.Open(arg)
-			if err != nil {
-				die(err)
-			}
-			cat(f)
+		os.Exit(0)
+	}
+
+	for _, file := range os.Args[1:] {
+		f, err := os.Open(file)
+		if err != nil {
+			die(err)
 		}
+
+		info, err := f.Stat()
+		if err != nil {
+			die(err)
+		}
+		if info.IsDir() {
+			die(fmt.Errorf("%s: is a directory", f.Name()))
+		}
+
+		cat(f)
 	}
 }
