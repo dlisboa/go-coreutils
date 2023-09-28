@@ -21,6 +21,7 @@ func main() {
 	file, err := os.Open("/etc/passwd")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, fmt.Errorf("whoami: %w", err))
+		os.Exit(1)
 	}
 
 	uid := os.Getuid()
