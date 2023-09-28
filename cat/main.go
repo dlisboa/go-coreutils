@@ -8,7 +8,10 @@ import (
 
 func cat(f *os.File) {
 	reader := bufio.NewReaderSize(f, 4096) // read 4 KB at a time
-	reader.WriteTo(os.Stdout)
+	_, err := reader.WriteTo(os.Stdout)
+	if err != nil {
+		die(err)
+	}
 }
 
 func die(e error) {
